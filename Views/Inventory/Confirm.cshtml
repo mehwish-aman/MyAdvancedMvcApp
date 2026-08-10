@@ -1,0 +1,47 @@
+@model InventoryItem
+<style>
+    body {
+        background-color: #f4f4f4;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .confirm-box {
+        background-color: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        text-align: center;
+        width: 350px;
+    }
+    .confirm-box button {
+        padding: 10px 20px;
+        margin: 10px 5px 0 5px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 15px;
+    }
+    .btn-yes {
+        background-color: #198754;
+        color: white;
+    }
+    .btn-no {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
+
+<div class="confirm-box">
+    <h3>Are you sure you want to save?</h3>
+    <p><strong>@Model.ItemName</strong> — @Model.Company</p>
+
+    <form method="get" action="/Inventory/Add">
+        <button type="submit" class="btn-yes">Yes</button>
+    </form>
+    <form method="get" action="/Inventory/Add">
+        <button type="submit" class="btn-no">No</button>
+    </form>
+</div>

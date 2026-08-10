@@ -1,0 +1,82 @@
+<style>
+    body{
+        background-color: lemonchiffon;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        padding-top: 40px;
+            }
+    .form-box{
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px rgb(0,0,0,0.2);
+        width: 400px;
+    }
+    .form-box input{
+        width: 100%;
+        padding: 8px;
+        margin: 6px 0 14px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+    .form-box label
+    {
+        font-weight:bold;
+        font-size: 14px;
+    }
+    .form-box button{
+        width: 100%;
+        padding: 10px;
+            background-color: #0d6efd;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+
+<div class="form-box">
+    <h2>Add Inventory Item</h2>
+    <form method="post" action="/Inventory/Save">
+    <label>Item Name</label>
+    <input type="text" name="ItemName" required />
+    
+    <label>Description</label>
+    <input type="text" name="Description" />
+
+    <label>Purchase Value</label>
+    <input type="number" step="0.01" id="PurchaseValue" name="PurchaseValue" required />
+
+    <label>Purchase Date</label>
+    <input type="date" name="PurchaseDate" required />
+
+    <label>Tax</label>
+    <input type="number" step="0.01" id="tax" name="Tax" required />
+
+    <label>Total (Auto-Calculated)</label>
+    <input type="number" step="0.01" id="total" name="Total" readonly />
+    
+    <label>Company</label>
+    <input type="text" name="Company" required />
+
+    <button type="submit">Save</button>
+    </form>
+</div>
+
+<script>
+    const purchasevalueInput =document.getElementById("purchaseValue");
+    const taxInput =document.getElementById("tax");
+    const totalInput = document.getElementById("total");
+    function calculateTotal() 
+    {
+        const purchaseValue = parseFloat(purchaseValue.value) || 0;
+        const tax = parseFloat(tax.value) || 0;
+        totalInput.value = (purchaseValue + tax).toFixed(2);
+    }
+
+    purchaseValue.addEventListener("input", calculateTotal);
+    tax.addEventListener("input", calculateTotal);
+</script>
