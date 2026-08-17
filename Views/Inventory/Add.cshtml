@@ -2,49 +2,72 @@
     body {
         background-color: white;
         font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        padding: 40px;
         min-height: 100vh;
+        box-sizing: border-box;
         margin: 0;
     }
+    #inventoryForm {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
     .form-box {
-        background-color: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        width: 600px;
-        position: relative;
-        background-color: #c4bebe;
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    border: 1px solid #ccc;
+    width: 100%;
+    min-height: 550px;   /* box ki minimum height, apni pasand se adjust kar sakti ho */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+    .form-box h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
     }
     .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* do equal columns */
-        gap: 0 20px; /* rows ke beech 0, columns ke beech 20px space */
+       display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 30px;
+    row-gap: 18px;
+    width: 100%; 
     }
-    .form-box input {
-        width: 100%;
-        padding: 8px;
-        margin: 6px 0 14px 0;
-        border: 1px solid #999;
+    .field-group {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .field-group label {
+        /*font-weight;*/
+        font-size: 16px;
+    }
+    .field-group input {
+        padding: 10px;
+        border: 1px solid grey;
         border-radius: 5px;
         box-sizing: border-box;
+        background-color: rgba(252, 250, 250, 0.973);
+        width:100%;
     }
-    .form-box label {
-        font-weight: bold;
-        font-size: 14px;
+    .save-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: auto;
     }
-    .form-box button {
-        width: 100%;
-        padding: 10px;
+    .save-row button {
+        padding: 10px 30px;
         background-color: #0d6efd;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         font-size: 16px;
-        margin-top: 10px;
     }
+    
 
     /* Modal overlay */
     .modal-overlay {
@@ -93,50 +116,64 @@
         cursor: pointer;
         font-size: 15px;
     }
-</style>
+    .page-title {
+    margin: 0 0 20px 0;
+}
 
+    #messageBox {
+        display: none;
+        margin-top: 15px;
+        padding: 10px;
+        background-color: #d4edda;
+        color: #155724;
+        border-radius: 5px;
+        text-align: center;
+    }
+</style>
+<h2 class="page-title" >Add Inventory Item</h2>
 <div class="form-box">
-    <h2>Add Inventory Item</h2>
     <form method="post" action="/Inventory/Save" id="inventoryForm">
         <div class="form-grid">
-            <div>
-                <label>Item Name</label>
+            <div class="field-group">
+                <label>Item Name  <span style="color:red;">*</span></label>
                 <input type="text" name="ItemName" required />
             </div>
-            <div>
+            <div class="field-group">
                 <label>Description</label>
                 <input type="text" name="Description" />
             </div>
 
-            <div>
-                <label>Purchase Value</label>
+            <div class="field-group">
+                <label>Purchase Value  <span style="color:red;">*</span></label>
                 <input type="number" step="0.01" id="PurchaseValue" name="PurchaseValue" required />
             </div>
-            <div>
-                <label>Purchase Date</label>
+            <div class="field-group">
+                <label>Purchase Date  <span style="color:red;">*</span></label>
                 <input type="date" name="PurchaseDate" required />
             </div>
 
-            <div>
-                <label>Tax</label>
+            <div class="field-group">
+                <label>Tax  <span style="color:red;">*</span></label>
                 <input type="number" step="0.01" id="tax" name="Tax" required />
             </div>
-            <div>
-                <label>Total (Auto-Calculated)</label>
+            <div class="field-group">
+                <label>Total</label>
                 <input type="number" step="0.01" id="total" name="Total" readonly />
             </div>
 
-            <div>
-                <label>Company</label>
+            <div class="field-group">
+                <label>Company  <span style="color:red;">*</span></label>
                 <input type="text" name="Company" required />
             </div>
         </div>
+        <div id="validationError" style="display:none; color:#dc3545; font-weight:bold; margin-top:15px;"></div>
 
-        <button type="button" id="saveBtn">Save</button>
+        <div class="save-row">
+            <button type="button" id="saveBtn">Save</button>
+        </div>
+
+        <div id="messageBox"></div>
     </form>
-    <div id="messageBox" style="display:none; margin-top:15px; 
-    padding:10px; background-color:#d4edda; color:#155724; border-radius:5px; 
-    text-align:center; grid-column: 1 / -1;"></div>
 </div>
 
 <!-- Modal / Popup -->
@@ -164,41 +201,47 @@
     purchaseValueInput.addEventListener("input", calculateTotal);
     taxInput.addEventListener("input", calculateTotal);
 
-  // Modal logic
-const saveBtn = document.getElementById("saveBtn");
-const modal = document.getElementById("confirmModal");
-const yesBtn = document.getElementById("yesBtn");
-const noBtn = document.getElementById("noBtn");
-const form = document.getElementById("inventoryForm");
-const messageBox = document.getElementById("messageBox");
-
-saveBtn.addEventListener("click", function () {
-    modal.style.display = "flex";
+    // Modal logic
+    const saveBtn = document.getElementById("saveBtn");
+    const modal = document.getElementById("confirmModal");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const form = document.getElementById("inventoryForm");
+    const messageBox = document.getElementById("messageBox");
+    saveBtn.addEventListener("click", function () {
+    if (form.checkValidity()) {
+        validationError.style.display = "none";
+        modal.style.display = "flex";
+    } else {
+        validationError.innerText = "Please fill in all required fields before saving.";
+        validationError.style.display = "block";
+        form.reportValidity(); // browser ke apne error bubbles bhi dikhayega har field ke paas
+    }
 });
 
-noBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-    // form.reset(); // form ke saare fields khali kar do
-    //totalInput.value = ""; // Total ko bhi explicitly clear kiya, safe rehne ke liye
-});
-
-yesBtn.addEventListener("click", function () {
-    const formData = new FormData(form);
-
-    fetch(form.action, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
+    noBtn.addEventListener("click", function () {
         modal.style.display = "none";
-        messageBox.innerText = data.message;
-        messageBox.style.display = "block";
-    })
-    .catch(error => {
-        modal.style.display = "none";
-        messageBox.innerText = "Something went wrong!";
-        messageBox.style.display = "block";
+        form.reset();
+        totalInput.value = "";
     });
-});
+
+    yesBtn.addEventListener("click", function () {
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            modal.style.display = "none";
+            messageBox.innerText = data.message;
+            messageBox.style.display = "block";
+        })
+        .catch(error => {
+            modal.style.display = "none";
+            messageBox.innerText = "Something went wrong!";
+            messageBox.style.display = "block";
+        });
+    });
 </script>
