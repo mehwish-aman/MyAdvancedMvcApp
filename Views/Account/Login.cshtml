@@ -1,4 +1,4 @@
-<style>
+<style>    /*styling yahna hogi means page body, login box, inputs ka style sb kuch yahan mention hoga*/
     body {
         background-color: white;
         margin: 0;
@@ -52,18 +52,28 @@
         }
 </style>
 
-<div class="login-box">
-    <h2>Login</h2>
+<div class="login-box">    <!--sari html yahna aygei UI sari yahan par likheingy hum wahi style mein jo classes likhin thin
+    unko use krty huye-->
+    <h2>Login</h2>   
 
-    @if (ViewBag.Error !=null)
+<!-- yeh  validation check hai kay ager error aya haito kya ho -->
+    @if (ViewBag.Error !=null)   
     {
-        <p class="error-msg">@ViewBag.Error</p>
-    }
-    <form method="post">
-        <input type="text" name="Username" placeholder="Username"/>
-        <input type="password" name="password" placeholder="Password" />
-        <button type="submit">Login</button>
+        <p class="error-msg">@ViewBag.Error</p>   <!--   yeh controller mein jaygea r error message print kr dega  -->
+    } 
+<!--         -->
+    <!-- Explaination:
+    form submit hotey hi browser full page reload krky pst req bhejy ga. dono values same url py jaingin /Account/Login py.
+    Account controller ka [httppost login method inhein catch krta hai aur credentials ko validate karta hai-->
 
+    <form method="post">      <!--   submit honay kay bd data kesy server ko jayega post req means  url mein hide krky jayega, agr get hota means
+        url mein show hota -->
+
+        <!--  when form submit, asp.net model binding kryga ky isy 
+        loginmodel class ki property mein dal dega (match krna zarorri hai) -->
+        <input type="text" name="Username" placeholder="Username"/> 
+        <input type="password" name="password" placeholder="Password" /> <!--placeholder-visual hint hai bs-->
+        <button type="submit">Login</button>   
     </form>
 </div>
         

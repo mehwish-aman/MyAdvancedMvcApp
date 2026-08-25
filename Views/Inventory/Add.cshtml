@@ -159,12 +159,57 @@
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
+}   
+/* for search box sty;ling */
+    .search-row{
+         display: flex;
+    justify-content: end;
+    margin-bottom: 8px;
+    }
+    .search-row input {
+    width: 350px;
+    padding: 10px;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
+.search-hidden {
+    display: none;
+}
+/*pagination stylingg*/
+ .pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+.pagination-controls button {
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.pagination-controls button.active {
+    background-color: #0d5ed8;
+    color: white;
+    border-color: #0d5ed8;
+}
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 </style>
 <h2 class="page-title" >Add Inventory Item</h2>
 <div class="form-box">
+    <!--method post means form data ko request ki body mein bhejyga chupa kr), action= konsy url py data jayega
+    JS se is form ko bad mein pkrny ky liye--->
     <form method="post" action="/Inventory/Save" id="inventoryForm">
         <div class="form-grid">
+            <!-- hr feild isi pattern mein hai-->
             <div class="field-group">
                 <label>Item Name  <span style="color:red;">*</span></label>
                 <input type="text" name="ItemName" maxlength="100" required />
@@ -207,11 +252,18 @@
     </form>
 </div>
 
-
+<!-- table-box ek white card hai (form-box jaisa hi styling) jo neeche Inventory List dikhata hai. 
+Isके andar ek <table> hai jisme foreach (var item in Model) se database ki har row ke 
+liye ek <tr> banta hai — har row mein item ka data (Name, Value, Date, etc.) aur Action column mein 
+Edit ✏️ aur Delete 🗑️ buttons hote hain, jinki Id data-id attribute mein chhupi hoti hai JavaScript 
+ke use ke liye.-->
 <div class="table-box">
     <h2 xclass ="page-title">Inventory List</h2>
     <table class="inventory-table">
-        <thread>
+       <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Search by item name, company..." />
+    </div>
+        <thead>
             <tr>
                 <th>Item Name</th>
                 <th>Description</th>
@@ -222,28 +274,50 @@
                 <th>Company</th>
                 <th>Action</th>
             </tr>
-        </thread>
-        <tbody id="inventoryTableBody">
-            @foreach (var item in Model)
-            {
-                <tr id="row-@item.Id">
-                    <td>@item.ItemName</td>
-                    <td>@item.Description</td>
-                    <td>@item.PurchaseValue</td>
-                    <td>@item.PurchaseDate.ToShortDateString()</td>
-                    <td>@item.Tax</td>
-                    <td>@item.Total</td>
-                    <td>@item.Company</td>
-                    <td>
-                        <button type="button" class="delete-btn" data-id="@item.Id">🗑️</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
+        </thead>
+       <tbody id="inventoryTableBody">
+    @foreach (var item in Model)
+    {
+        <tr id="row-@item.Id">
+            <td>@item.ItemName</td>
+            <td>@item.Description</td>
+            <td>@item.PurchaseValue</td>
+            <td>@item.PurchaseDate.ToShortDateString()</td>
+            <td>@item.Tax</td>
+            <td>@item.Total</td>
+            <td>@item.Company</td>
+            <td>
+                <button type="button" class="edit-btn"
+                    data-id="@item.Id"
+                    data-itemname="@item.ItemName"
+                    data-description="@item.Description"
+                    data-purchasevalue="@item.PurchaseValue"
+                    data-purchasedate="@item.PurchaseDate.ToString("yyyy-MM-dd")"
+                    data-tax="@item.Tax"
+                    data-company="@item.Company">✏️</button>
+                <button type="button" class="delete-btn" data-id="@item.Id">🗑️</button>
+            </td>
+        </tr>
+    }
+</tbody>
     </table>
+    <div class="pagination-controls" id="paginationControls">
+
+</div>
 </div>
 
 <!-- Modal / Popup -->
+<!--.modal-overlay — Poori screen ko cover karne wala dark transparent background (rgba(0,0,0,0.5)), 
+position: fixed se scroll ke sath move nahi hota, default display: none (invisible), JavaScript ise 
+flex karke dikhati hai jab popup khulna ho.
+.modal-box — Andar ka safed card jisme actual popup content hota hai (icon, message, Yes/No buttons) 
+rounded corners, shadow, aur fixed width ke saath center mein rehta hai.-->
+
+<!--Save Modal (#confirmModal) aur Delete Modal (#deleteModal) dono same pattern follow karte hain:
+• SVG icon (green checkmark ya red cross)
+• Confirmation text
+• Yes/No buttons
+Dono alag alag IDs rakhte hain taake independently control ho sakein (ek dusre ko disturb na karein).-->
 <div class="modal-overlay" id="confirmModal">
     <div class="modal-box">
          <div class="check-icon">
@@ -277,140 +351,362 @@
         </div>
     </div>
 </div>
+
+
+
+<!--JS script-->
 <script>
-    const purchaseValueInput = document.getElementById("PurchaseValue");
-    const taxInput = document.getElementById("tax");
-    const totalInput = document.getElementById("total");
-
-    function calculateTotal() {
-    const purchaseValue = parseFloat(purchaseValueInput.value) || 0;
-    const taxPercent = parseFloat(taxInput.value) || 0;
-    const taxAmount = (purchaseValue * taxPercent) / 100;
-    totalInput.value = (purchaseValue + taxAmount).toFixed(2);
-}
-// Numeric fields ko max 6 digits tak limit karo
-    function limitNumberInput(inputElement, maxDigits) {
-    inputElement.addEventListener("input", function () {
-        if (this.value.length > maxDigits) {
-            this.value = this.value.slice(0, maxDigits);
-        }
-        });
-       }
-
-      limitNumberInput(purchaseValueInput, 6);
-     limitNumberInput(taxInput, 6);
-
-    purchaseValueInput.addEventListener("input", calculateTotal);
-    taxInput.addEventListener("input", calculateTotal);
-
-    // Modal logic
-    const saveBtn = document.getElementById("saveBtn");
-    const modal = document.getElementById("confirmModal");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const form = document.getElementById("inventoryForm");
-    const messageBox = document.getElementById("messageBox");
-    saveBtn.addEventListener("click", function () {
-    if (form.checkValidity()) {
-        validationError.style.display = "none";
-        modal.style.display = "flex";
-    } else {
-        validationError.innerText = "Please fill in all required fields before saving.";
-        validationError.style.display = "block";
-        form.reportValidity(); // browser ke apne error bubbles bhi dikhayega har field ke paas
-    }
-});
-
-    noBtn.addEventListener("click", function () {
-        modal.style.display = "none";
-        form.reset();
-        totalInput.value = "";
-    });
-
-    yesBtn.addEventListener("click", function () {
-    const formData = new FormData(form);
-
-    fetch(form.action, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        modal.style.display = "none";
-        messageBox.innerText = data.message;
-        messageBox.style.display = "block";
-
-        // Naya row table mein add karo
-        const tableBody = document.getElementById("inventoryTableBody");
-        const newRow = document.createElement("tr");
-        newRow.id = "row-" + data.id;
-        newRow.innerHTML = `
-            <td>${data.itemName}</td>
-            <td>${data.description}</td>
-            <td>${data.purchaseValue}</td>
-            <td>${data.purchaseDate}</td>
-            <td>${data.tax}</td>
-            <td>${data.total}</td>
-            <td>${data.company}</td>
-            <td><button type="button" class="delete-btn" data-id="${data.id}">🗑️</button></td>
-        `;
-        tableBody.prepend(newRow);
-
-        // Naye delete button ko bhi event listener do
-        newRow.querySelector(".delete-btn").addEventListener("click", function () {
-            itemIdToDelete = this.getAttribute("data-id");
-            deleteModal.style.display = "flex";
-        });
-
-        form.reset();
-        totalInput.value = "0";
-    })
-    .catch(error => {
-        modal.style.display = "none";
-        messageBox.innerText = "Something went wrong!";
-        messageBox.style.display = "block";
-    });
-});  
-
-
-
-//delete button logic javascript
-// Delete logic
+    /* Teeno numeric fields ko JavaScript variables mein save kr liya, taake unko baar-baar 
+dhoondhna na pade*/
+const purchaseValueInput = document.getElementById("PurchaseValue");
+const taxInput = document.getElementById("tax");
+const totalInput = document.getElementById("total");
+/*Pehle saare zaroori elements (saveBtn, modal, yesBtn, noBtn, form, messageBox) ko getElementById se 
+pakda gaya. */
+const saveBtn = document.getElementById("saveBtn");
+const modal = document.getElementById("confirmModal");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+const form = document.getElementById("inventoryForm");
+const messageBox = document.getElementById("messageBox");
 const deleteModal = document.getElementById("deleteModal");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
+const validationError = document.getElementById("validationError");
+
+const rowsPerPage=4;
+let currentPage=1;
+
+let editingItemId = null; /*null matlab "naya item add ho raha hai", number matlab "is Id ko edit 
+kiya ja raha hai*/
+//let itemIdToDelete = null; ek variable jo temporarily yaad rakhta hai 
+//"abhi konsi item delete honi hai" jab tak "Yes" na dabe.
 let itemIdToDelete = null;
 
-// Saare delete buttons ko event listener do
-document.querySelectorAll(".delete-btn").forEach(function (button) {
-    button.addEventListener("click", function () {
-        itemIdToDelete = this.getAttribute("data-id");
-        deleteModal.style.display = "flex";
-    });
-});
 
-cancelDeleteBtn.addEventListener("click", function () {
-    deleteModal.style.display = "none";
-    itemIdToDelete = null;
-});
 
-confirmDeleteBtn.addEventListener("click", function () {
-    if (itemIdToDelete) {
-        fetch("/Inventory/Delete/" + itemIdToDelete, {
-            method: "POST"
-        })
-        .then(response => response.json())
-        .then(data => {
-            deleteModal.style.display = "none";
-            const row = document.getElementById("row-" + itemIdToDelete);
-            if (row) {
-                row.remove();
-            }
-        })
-        .catch(error => {
-            deleteModal.style.display = "none";
-            alert("Something went wrong while deleting.");
-        });
+                        /*Function for Calulating Total Purchse Value*/
+function calculateTotal() {  
+/*parseFloat(...) input ki value string hoti hai (jaise "500"), isko number mein convert karta hai
+|| 0 agar field khali ho (parseFloat NaN de), to 0 use karo, crash na ho*/
+const purchaseValue = parseFloat(purchaseValueInput.value) || 0;
+const taxPercent = parseFloat(taxInput.value) || 0;
+/*Tax % formula hai. tofixed 2 decimal places tk round krta hai*/
+const taxAmount = (purchaseValue * taxPercent) / 100; 
+totalInput.value = (purchaseValue + taxAmount).toFixed(2);
+}
+
+            /* Numeric fields ko max 6 digits tak limit karo*/
+/*Ye ek reusable function hai (kisi bhi input aur limit ke sath call kar sakte ho). This value.length 
+kitne characters ho gaye. .slice(0, maxDigits) extra characters kaat deta hai agar limit se zyada hon.*/
+        
+function limitNumberInput(inputElement, maxDigits) {
+inputElement.addEventListener("input", function () {
+    if (this.value.length > maxDigits) {
+        this.value = this.value.slice(0, maxDigits);
     }
+    });
+    }
+
+limitNumberInput(purchaseValueInput, 6);
+limitNumberInput(taxInput, 6);
+
+/*Jab bhi user in fields mein type kare "input" event = har keystroke pe, 
+calculateTotal function chalta hai, real-time update.*/
+purchaseValueInput.addEventListener("input", calculateTotal);
+taxInput.addEventListener("input", calculateTotal);
+
+/*  Row ke andar edit/delete buttons ko event listeners dene wala reusable function ye func 3 different jaga use ho raha hai*/
+function attachRowEvents(row) {
+    row.querySelector(".delete-btn").addEventListener("click", function () {
+    itemIdToDelete = this.getAttribute("data-id");
+    deleteModal.style.display = "flex";  });
+
+    row.querySelector(".edit-btn").addEventListener("click", function () {
+    editingItemId = this.getAttribute("data-id");
+    document.querySelector('input[name="ItemName"]').value = this.getAttribute("data-itemname");
+    document.querySelector('input[name="Description"]').value = this.getAttribute("data-description");
+    purchaseValueInput.value = this.getAttribute("data-purchasevalue");
+    document.querySelector('input[name="PurchaseDate"]').value = this.getAttribute("data-purchasedate");
+    taxInput.value = this.getAttribute("data-tax");
+    document.querySelector('input[name="Company"]').value = this.getAttribute("data-company");
+    calculateTotal();
+    saveBtn.innerText = "Update";});
+}
+    // Page load ke waqt jo rows hain, unko events do
+document.querySelectorAll("#inventoryTableBody tr").forEach(function (row) {
+    attachRowEvents(row);
 });
+
+
+// Modal logic
+
+// Save/Update button click — pehle validation check
+                            /*Save Logic*/
+    /*Save click hone par form.checkValidity() check karta hai form sahi bhara hai ya nahi 
+agar sahi hai to modal khulta hai (display: flex), agar nahi to error message dikhta hai aur 
+reportValidity() browser ke apne warnings har khali field ke paas dikhata hai. No click hone par 
+modal band ho jata hai aur form reset (khali) ho jata hai.*/         
+saveBtn.addEventListener("click", function () {
+    if (form.checkValidity()) {
+    validationError.style.display = "none";
+    modal.style.display = "flex"; } 
+    else {
+    
+    validationError.innerText = "Please fill in all required fields before saving.";
+    validationError.style.display = "block";
+    form.reportValidity(); /* browser ke apne error bubbles bhi dikhayega har field ke paas*/}
+});
+
+
+                    /* // Save/Update Modal — "No button*/
+    /*Modal band, form ke saare fields khali (form.reset() HTML ka built-in method), Total explicitly 
+    khali kiya (kyunki wo readonly hai, reset() kabhi consistent nahi hota readonly fields ke sath).*/                
+
+  // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
+   // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
+function buildRowHtml(data) {
+    return `
+        <td>${data.itemName}</td>
+        <td>${data.description}</td>
+        <td>${data.purchaseValue}</td>
+        <td>${data.purchaseDate}</td>
+        <td>${data.tax}</td>
+        <td>${data.total}</td>
+        <td>${data.company}</td>
+        <td>
+            <button type="button" class="edit-btn"
+                data-id="${data.id}"
+                data-itemname="${data.itemName}"
+                data-description="${data.description}"
+                data-purchasevalue="${data.purchaseValue}"
+                data-purchasedate="${data.rawDate}"
+                data-tax="${data.tax}"
+                data-company="${data.company}">✏️</button>
+            <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+        </td>
+    `;
+}
+noBtn.addEventListener("click", function () {
+    modal.style.display = "none";
+    //totalInput.value = "";
+    form.reset(); //form clear kiya
+    totalInput.value = "0";
+    editingItemId = null;
+    saveBtn.innerText = "Save";
+});
+
+                    /*// Save/Update Modal — "Yes button*/
+yesBtn.addEventListener("click", function () {
+    //debugger; 
+    //new FormData(form) form ke saare fields (name/value pairs) automatically collect karta hai
+    const formData = new FormData(form);
+    console.log("📊 FormData created:", formData); 
+    //AJEX-->fetch(form.action[], background post req bhejta hai /Inventory/Update/ pe without pg loading)
+    const url = editingItemId ? "/Inventory/Update/" + editingItemId : form.action;
+     console.log("✅ YES BUTTON CLICKED!");
+     console.log("🔗 Fetching to URL:", url); 
+
+
+    fetch(url, {method: "POST", body: formData})
+        //server sy aye responce ko(JS string mein hai) JS obj mein convrt krta hai
+        .then(response => response.json())
+              
+        //Actual data mil chuka ab ui ko update kry
+        .then(data => {
+            modal.style.display = "none";
+            messageBox.innerText = data.message; //msg box mein yeh dikhaye
+            messageBox.style.display = "block";
+
+            if (editingItemId) {
+                // Existing row ko update karo
+                const row = document.getElementById("row-" + data.id);
+                row.innerHTML = `
+                    <td>${data.itemName}</td>
+                    <td>${data.description}</td>
+                    <td>${data.purchaseValue}</td>
+                    <td>${data.purchaseDate}</td>
+                    <td>${data.tax}</td>
+                    <td>${data.total}</td>
+                    <td>${data.company}</td>
+                    <td>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
+                        <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+                    </td>
+                `;
+                attachRowEvents(row);
+            } else {
+                // Naya row add karo (jaisa pehle tha)
+                const tableBody = document.getElementById("inventoryTableBody");
+                const newRow = document.createElement("tr");
+                newRow.id = "row-" + data.id;
+                /*is new row mein html content aya*/
+                newRow.innerHTML = `     
+                    <td>${data.itemName}</td>
+                    <td>${data.description}</td>
+                    <td>${data.purchaseValue}</td>
+                    <td>${data.purchaseDate}</td>
+                    <td>${data.tax}</td>
+                    <td>${data.total}</td>
+                    <td>${data.company}</td>
+                    <td>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
+                        <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+                    </td>
+                `;
+                tableBody.prepend(newRow); //added new row on top of table
+                attachRowEvents(newRow);  //manualy eventlistener deney ky liye del btn jo bd mein bna tha
+            }
+
+            form.reset(); //form clear kiya
+            totalInput.value = "0";
+            editingItemId = null;
+            saveBtn.innerText = "Save";
+        })
+        //if any network erro it will handle that
+        .catch(error => {
+            modal.style.display = "none";
+            messageBox.innerText = "Something went wrong!";
+            messageBox.style.display = "block";
+        });
+        })
+
+
+                            // delete button logic javascript
+        // Delete logic 
+
+        //Saare delete buttons ko event listener do--document.querySelectorAll(".delete-btn") saare delete 
+        //buttons dhoondhta hai (page load ke waqt jo table mein the), har ek pe click listener lagata hai. 
+        //Click hone pe, this.getAttribute("data-id") se us specific row ki ID nikalta hai, aur modal dikhata hai.
+       // document.querySelectorAll(".delete-btn").forEach(function (button) {
+       /* button.addEventListener("click", function () {
+            itemIdToDelete = this.getAttribute("data-id");
+            deleteModal.style.display = "flex";
+        });
+*/      // Delete Modal — "No"
+        cancelDeleteBtn.addEventListener("click", function () {
+        deleteModal.style.display = "none";
+        itemIdToDelete = null;
+        });
+
+        //// Delete Modal — "Yes" click hone pe, fetch() se DELETE request (POST method se) bhejta hai /Inventory/Delete/5 
+        //jaisi URL pe. Success milne pe, document.getElementById("row-" + itemIdToDelete) se wahi row 
+        //dhoondh ke .remove() se turant DOM se hata deta hai koi page reload nahi.
+        confirmDeleteBtn.addEventListener("click", function () {
+        if (itemIdToDelete) {
+            fetch("/Inventory/Delete/" + itemIdToDelete, {
+                method: "POST"
+            })
+            .then(response => response.json())
+            .then(data => {
+                deleteModal.style.display = "none";
+                const row = document.getElementById("row-" + itemIdToDelete);
+                if (row) {
+                    row.remove();
+                }
+            })
+            .catch(error => {
+                deleteModal.style.display = "none";
+                alert("Something went wrong while deleting.");
+            });
+        }
+});
+
+//Ek Important Observation (Bug Jo Interview Mein Bhi Point Out Kar Sakti Ho)
+/*Naya row jo AJAX se add hota hai, uska delete button manually event listener leta 
+hai (jo maine highlight kiya). Ye isliye zaroori hai kyunki document.querySelectorAll(".delete-btn") 
+sirf ek dafa, page load ke waqt chalta hai jo buttons baad mein JavaScript se create hote hain, unhe 
+wo purana loop "dekh" nahi sakta. Isko "Event Delegation" problem kehte hain real-world mein iska ek 
+behtar solution hota hai (parent element pe ek hi listener lagana), jo hum chahे े to future mein improve 
+kar sakte hain.*/
+
+
+
+//search logic
+const searchInput = document.getElementById("searchInput"); 
+//jab b user input mein key press kry hr br yeh function chalay
+searchInput.addEventListener("input", function () {       
+    const searchTerm = this.value.toLowerCase(); //lower case mei convert takay small capital dono ko consider kry
+    const rows = document.querySelectorAll("#inventoryTableBody tr");   //table ki sari rows aik list mein rakh ley
+//har row ko check krny kay liye foreach function
+    rows.forEach(function (row) {
+        const rowText = row.textContent.toLowerCase(); //row ky sarey coulmns ko lower mein convert kiya
+        //checks row mein searche ditem mojood hai ya nahin agar hai to 
+        if (rowText.includes(searchTerm)) {
+            row.classList.remove("search-hidden");  //to show ho jaye row   --old   row.style.display= "" 
+        } else {
+            row.classList.add("search-hidden"); //nahin hai match to chup jaye row
+        }
+    });
+    currentPage = 1; // Search karte waqt wapis page 1 pe le aao
+    renderPagination();
+});
+
+
+//pagination logic
+//wahi rows jo fun sy match ho rahi hain ya sab agar search khali hai
+function getVisibleRows(){
+    const allRows =Array.from(document.querySelectorAll("#inventoryTableBody tr"));
+    return allRows.filter(row=>!row.classList.contains("search-hidden") );
+}
+
+function renderPagination(){
+    const visibleRows= getVisibleRows();
+    const totalPages=Math.ceil(visibleRows.length  / rowsPerPage);
+
+    //agar current page total pages sy zyada ho gaye ,search ky bd to reset
+    if (currentPage>totalPages){
+        currentPage =totalPages || 1;
+    }
+  //pehlay sari rows hide , phir current page show ho sirf
+  visibleRows.forEach(function(row,index){
+    const start = (currentPage -1 )* rowsPerPage;
+    const end= start +rowsPerPage;
+    row.style.display= (index >=start && index < end)  ?"" :"none";
+  });
+  //pagination buttons creation
+  const controls =document.getElementById("paginationControls")
+  controls.innerHTML ="";
+   //previous button
+   const prevBtn =document.createElement("button");
+   prevBtn.innerText = "Previous";
+   prevBtn.disabled =currentPage===1;
+   prevBtn.addEventListener("click",function(){
+    currentPage--;
+    renderPagination();
+   });
+   controls.appendChild(prevBtn);
+
+      // Sirf current page ke aas-paas ke numbers dikhao
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.innerText = i;
+        if (i === currentPage) {
+            pageBtn.classList.add("active");
+        }
+        pageBtn.addEventListener("click", function () {
+            currentPage = i;
+            renderPagination();
+        });
+        controls.appendChild(pageBtn);
+    }
+    //next button 
+    const nextBtn =document.createElement("button");
+    nextBtn.innerText = "Next";
+    nextBtn.disabled =currentPage ===totalPages  || totalPages ===0;
+    nextBtn.addEventListener("click",function(){
+        currentPage++;
+        renderPagination();
+     });
+     controls.appendChild(nextBtn);
+}
+renderPagination();  
 </script>

@@ -2,6 +2,50 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Launch Edge with ASP.NET Core",
+            "type": "msedge",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "url": "http://localhost:7056/Inventory/Add",
+            "webRoot": "${workspaceFolder}",
+            "sourceMapPathOverrides": {
+                "https://localhost:7056/*": "${workspaceFolder}/*"
+            }
+        },
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/MyMvcApp.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "ASP.NET Core & Browser Debug",
+            "configurations": [".NET Core Launch (web)", "Launch Edge with ASP.NET Core"]
+        }
+    ]
+}
+
+/*{
+    "version": "0.2.0",
+    "compounds": [
+    {
+        "name": "ASP.Net Core & Browser",
+        "configurations": [".NET Core Launch (web)", "Launch Chrome"]
+    }
+ ],
+    "configurations": [
+        {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
             "request": "launch",
@@ -17,6 +61,14 @@
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
             }
-        }
+        },
+         {
+        "name": "Launch Chrome",
+        "type": "chrome",
+        "request": "launch",
+        "url": "https://localhost:7056/Inventory/Add",
+        "webRoot": "${workspaceRoot}"
+    }
     ]
-}
+}*/
+

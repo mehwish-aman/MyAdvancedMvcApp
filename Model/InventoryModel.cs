@@ -1,8 +1,9 @@
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;    //data annotation ka use kr k hum model ki properties ko validate
+// kr skty hain, jaise max length, range, required etc
 
 public class InventoryItem
 {
-    public int Id { get; set; }
+    public int Id { get; set; }   //EF core isy automatically primary key samjh lega
 
     [MaxLength(100)]
     public string ItemName { get; set; }
@@ -13,7 +14,7 @@ public class InventoryItem
     [Range(0, 999999)]
     public decimal PurchaseValue { get; set; } =0;
 
-    public DateTime PurchaseDate { get; set; }
+    public DateTime PurchaseDate { get; set; }   
 
     [Range(0, 999999)]
     public decimal Tax { get; set; } = 0;
@@ -21,8 +22,8 @@ public class InventoryItem
     [MaxLength(100)]
     public string Company { get; set; }
 
-    [Range(0, 999999)]
-    public decimal Total { get; set; }=0;
+    [Range(0, 999999)]   //for limiting to 6 digits only
+    public decimal Total { get; set; }=0;  //default value set kr di hai visual hint.
     [Range(0, 999999)]
      public bool IsDeleted { get; set; } = false;
 }
