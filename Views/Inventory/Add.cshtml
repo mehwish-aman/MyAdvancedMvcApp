@@ -3,10 +3,11 @@
     body {
         background-color: white;
         font-family: Arial, sans-serif;
-        padding: 40px;
+        padding: 20px;
         min-height: 100vh;
         box-sizing: border-box;
         margin: 0;
+        overflow-x: hidden;
     }
     #inventoryForm {
     display: flex;
@@ -15,12 +16,12 @@
 }
     .form-box {
     background-color: white;
-    padding: 30px 40px;
+    padding: 20px 30px;
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     border: 1px solid #ccc;
-    width: 98%;
-    min-height: 270px;   /* box ki minimum height, apni pasand se adjust kar sakti ho */
+    width: 100%;
+    min-height: 140px;   /* box ki minimum height, apni pasand se adjust kar sakti ho */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -44,7 +45,7 @@
     }
     .field-group label {
         /*font-weight;*/
-        font-size: 16px;
+        font-size: 13px;
     }
     .field-group input {
         padding: 10px;
@@ -57,10 +58,10 @@
     .save-row {
         display: flex;
         justify-content: flex-end;
-        margin-top: 25px;
+        margin-top: 5px;
     }
     .save-row button {
-        padding: 10px 30px;
+        padding: 10px 20px;
         background-color: #0d5ed8;
         color: white;
         border: none;
@@ -68,16 +69,32 @@
         cursor: pointer;
         font-size: 16px;
     }
-    
+   .truncate {
+    display: inline-block;
+    max-width: 180px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
     .table-box {
-    margin-top: 40px;
+    margin-top: 10px;
     background-color: white;
-    padding: 30px 40px;
+    padding: 10px 20px;
     border-radius: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     border: 1px solid #ccc;
-    width: 98%;
+    width: 100%;
     box-sizing: border-box;
+}
+.text-left {
+    text-align: left;
+}
+.text-right {
+    text-align: right;
+}
+.text-center {
+    text-align: center;
 }
     .inventory-table {
         width: 100%;
@@ -85,13 +102,17 @@
     }
     .inventory-table th, .inventory-table td {
         padding: 10px;
-        text-align: left;
-        border-bottom: 1px solid #ddd;
+        /*text-align: left;*/
+        border: 1px solid #ddd; /* pehle sirf border-bottom tha, ab chaaron taraf */
     }
     .inventory-table th {
         background-color: #f0f0f0;
         font-weight: bold;
+         font-size: 15px; /* naya chhota font size */
     }
+    .inventory-table td {
+    font-size: 14px; /* rows ka text size */
+}
 
     /* Modal overlay */
     .modal-overlay {
@@ -143,30 +164,46 @@
     .page-title {
     margin: 0 0 20px 0;
 }
-
     #messageBox {
         display: none;
         margin-left: 500px;
-        padding: 10px 20px;
+        padding: 5px 6px;
         background-color:#192b87;
         color: white;
         border-radius: 5px;
         text-align: center;
         width: fit-content;
-        max-width:400px;
+        max-width:300px;
     }
     .check-icon {
     display: flex;
     justify-content: center;
     margin-bottom: 15px;
 }   
-/* for search box sty;ling */
-    .search-row{
+/* for search box styling */
+
+.list-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.list-header-row .page-title {
+    margin: 0;
+}
+.list-header-row input {
+    width: 300px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.search-row{
          display: flex;
     justify-content: end;
     margin-bottom: 8px;
     }
-    .search-row input {
+.search-row input {
     width: 350px;
     padding: 10px;
     border: 1px solid #000000;
@@ -181,8 +218,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    margin-top: 20px;
+    gap: 5px;
+    margin-top: 8px;
 }
 .pagination-controls button {
     padding: 8px 14px;
@@ -201,9 +238,35 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
-
+.tooltip-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+.tooltip-wrapper .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    background-color: white;
+    color: #333;
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 10;
+    bottom: 125%;
+    left: 0;
+    width: max-content;
+    max-width: 300px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: opacity 0.2s;
+    white-space: normal;
+}
+.tooltip-wrapper:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
 </style>
-<h2 class="page-title" >Add Inventory Item</h2>
+<h3 class="page-title" >Add Inventory Item</h3>
 <div class="form-box">
     <!--method post means form data ko request ki body mein bhejyga chupa kr), action= konsy url py data jayega
     JS se is form ko bad mein pkrny ky liye--->
@@ -258,20 +321,20 @@ liye ek <tr> banta hai — har row mein item ka data (Name, Value, Date, etc.) a
 Edit ✏️ aur Delete 🗑️ buttons hote hain, jinki Id data-id attribute mein chhupi hoti hai JavaScript 
 ke use ke liye.-->
 <div class="table-box">
-    <h2 xclass ="page-title">Inventory List</h2>
-    <table class="inventory-table">
-       <div class="search-row">
+    <div class="list-header-row">
+        <h3 class="page-title">Inventory List</h3>
         <input type="text" id="searchInput" placeholder="Search by item name, company..." />
     </div>
+    <table class="inventory-table">
         <thead>
             <tr>
-                <th>Item Name</th>
-                <th>Description</th>
-                <th>Purchase Value</th>
-                <th>Purchase Date</th>
-                <th>Tax %</th>
-                <th>Total</th>
-                <th>Company</th>
+                <th class="text-left">Item Name</th>
+                <th class="text-left">Description</th>
+                <th class="text-left">Company</th>
+                <th class="text-right">Purchase Value</th>
+                <th class="text-center">Purchase Date</th>
+                <th class="text-right"> Tax %</th>
+                <th class="text-right">Total</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -279,13 +342,17 @@ ke use ke liye.-->
     @foreach (var item in Model)
     {
         <tr id="row-@item.Id">
-            <td>@item.ItemName</td>
-            <td>@item.Description</td>
-            <td>@item.PurchaseValue</td>
-            <td>@item.PurchaseDate.ToShortDateString()</td>
-            <td>@item.Tax</td>
-            <td>@item.Total</td>
-            <td>@item.Company</td>
+            <td class="text-left">@item.ItemName</td>
+            <td class="text-left"> 
+                <span class="tooltip-wrapper truncate"> @item.Description
+                    <span class="tooltip-text">@item.Description</span>
+                </span>
+            </td>
+            <td class="text-left">@item.Company</td>
+            <td class="text-right">@item.PurchaseValue</td>
+            <td class="text-center">@item.PurchaseDate.ToShortDateString()</td>
+            <td class="text-right">@item.Tax</td>
+            <td class="text-right">@item.Total</td>
             <td>
                 <button type="button" class="edit-btn"
                     data-id="@item.Id"
@@ -374,7 +441,7 @@ const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const validationError = document.getElementById("validationError");
 
-const rowsPerPage=4;
+const rowsPerPage=5;
 let currentPage=1;
 
 let editingItemId = null; /*null matlab "naya item add ho raha hai", number matlab "is Id ko edit 
@@ -382,8 +449,6 @@ kiya ja raha hai*/
 //let itemIdToDelete = null; ek variable jo temporarily yaad rakhta hai 
 //"abhi konsi item delete honi hai" jab tak "Yes" na dabe.
 let itemIdToDelete = null;
-
-
 
                         /*Function for Calulating Total Purchse Value*/
 function calculateTotal() {  
@@ -409,7 +474,7 @@ inputElement.addEventListener("input", function () {
     }
 
 limitNumberInput(purchaseValueInput, 6);
-limitNumberInput(taxInput, 6);
+limitNumberInput(taxInput, 2);
 
 /*Jab bhi user in fields mein type kare "input" event = har keystroke pe, 
 calculateTotal function chalta hai, real-time update.*/
@@ -441,7 +506,36 @@ document.querySelectorAll("#inventoryTableBody tr").forEach(function (row) {
 
 // Modal logic
 
-// Save/Update button click — pehle validation check
+
+  // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
+   // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
+function buildRowHtml(data) {
+    return `
+        <td class="text-left truncate">${data.itemName}</td>
+        <td class="text-left">
+        <span class="tooltip-text">${data.description}</span>
+        </span> 
+        </td>
+         <td class="text-left">${data.company}</td>
+        <td class="text-right">${data.purchaseValue}</td>
+        <td class="text-center">${data.purchaseDate}</td>
+        <td class="text-right">${data.tax}</td>
+        <td class="text-right">${data.total}</td>
+       
+        <td>
+            <button type="button" class="edit-btn"
+                data-id="${data.id}"
+                data-itemname="${data.itemName}"
+                data-description="${data.description}"
+                data-purchasevalue="${data.purchaseValue}"
+                data-purchasedate="${data.rawDate}"
+                data-tax="${data.tax}"
+                data-company="${data.company}">✏️</button>
+            <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+        </td>
+    `;
+}
+               // Save/Update button click — pehle validation check
                             /*Save Logic*/
     /*Save click hone par form.checkValidity() check karta hai form sahi bhara hai ya nahi 
 agar sahi hai to modal khulta hai (display: flex), agar nahi to error message dikhta hai aur 
@@ -456,6 +550,7 @@ saveBtn.addEventListener("click", function () {
     validationError.innerText = "Please fill in all required fields before saving.";
     validationError.style.display = "block";
     form.reportValidity(); /* browser ke apne error bubbles bhi dikhayega har field ke paas*/}
+    //saveBtn.innerText = "save";
 });
 
 
@@ -463,42 +558,28 @@ saveBtn.addEventListener("click", function () {
     /*Modal band, form ke saare fields khali (form.reset() HTML ka built-in method), Total explicitly 
     khali kiya (kyunki wo readonly hai, reset() kabhi consistent nahi hota readonly fields ke sath).*/                
 
-  // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
-   // Ek row ka HTML template banane wala helper function (Add aur Update dono use karenge)
-function buildRowHtml(data) {
-    return `
-        <td>${data.itemName}</td>
-        <td>${data.description}</td>
-        <td>${data.purchaseValue}</td>
-        <td>${data.purchaseDate}</td>
-        <td>${data.tax}</td>
-        <td>${data.total}</td>
-        <td>${data.company}</td>
-        <td>
-            <button type="button" class="edit-btn"
-                data-id="${data.id}"
-                data-itemname="${data.itemName}"
-                data-description="${data.description}"
-                data-purchasevalue="${data.purchaseValue}"
-                data-purchasedate="${data.rawDate}"
-                data-tax="${data.tax}"
-                data-company="${data.company}">✏️</button>
-            <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
-        </td>
-    `;
-}
 noBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-    //totalInput.value = "";
-    form.reset(); //form clear kiya
-    totalInput.value = "0";
-    editingItemId = null;
-    saveBtn.innerText = "Save";
+    console.log("No clicked, editingItemId before reset:", editingItemId);
+    //edit mode 
+    if (editingItemId)
+    {
+     modal.style.display = "none";
+    }
+    //add mode 
+    else{
+        modal.style.display = "none";
+        totalInput.value = "0";
+        editingItemId = null;
+        console.log("editingItemId after reset:", editingItemId);
+        form.reset(); //form clear kiya
+        saveBtn.innerText = "save";
+    }
 });
 
                     /*// Save/Update Modal — "Yes button*/
 yesBtn.addEventListener("click", function () {
     //debugger; 
+    console.log("Yes clicked, editingItemId is:", editingItemId);
     //new FormData(form) form ke saare fields (name/value pairs) automatically collect karta hai
     const formData = new FormData(form);
     console.log("📊 FormData created:", formData); 
@@ -517,18 +598,21 @@ yesBtn.addEventListener("click", function () {
             modal.style.display = "none";
             messageBox.innerText = data.message; //msg box mein yeh dikhaye
             messageBox.style.display = "block";
-
+           // setTimeout("", 3000); // 3000ms = 3 seconds
+              setTimeout(function () { 
+                messageBox.style.display = "none";
+             }, 3000); // 3000ms = 3 seconds
             if (editingItemId) {
                 // Existing row ko update karo
                 const row = document.getElementById("row-" + data.id);
                 row.innerHTML = `
-                    <td>${data.itemName}</td>
-                    <td>${data.description}</td>
-                    <td>${data.purchaseValue}</td>
-                    <td>${data.purchaseDate}</td>
-                    <td>${data.tax}</td>
-                    <td>${data.total}</td>
-                    <td>${data.company}</td>
+                    <td class="text-left">${data.itemName}</td>
+                    <td class="text-left">${data.description}</td>
+                    <td class="text-left">${data.company}</td>
+                    <td class="text-right">${data.purchaseValue}</td>
+                    <td class="text-center">${data.purchaseDate}</td>
+                    <td class="text-right">${data.tax}</td>
+                    <td class="text-center">${data.total}</td>
                     <td>
                         <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
                         <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
@@ -542,13 +626,13 @@ yesBtn.addEventListener("click", function () {
                 newRow.id = "row-" + data.id;
                 /*is new row mein html content aya*/
                 newRow.innerHTML = `     
-                    <td>${data.itemName}</td>
-                    <td>${data.description}</td>
-                    <td>${data.purchaseValue}</td>
-                    <td>${data.purchaseDate}</td>
-                    <td>${data.tax}</td>
-                    <td>${data.total}</td>
-                    <td>${data.company}</td>
+                    <td class="text-left">${data.itemName}</td>
+                    <td class="text-left">${data.description}</td>
+                    <td class="text-left">${data.company}</td>
+                    <td class="text-right">${data.purchaseValue}</td>
+                    <td class="text-center">${data.purchaseDate}</td>
+                    <td class="text-right">${data.tax}</td>
+                    <td class="text-right">${data.total}</td>
                     <td>
                         <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
                         <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
@@ -561,13 +645,17 @@ yesBtn.addEventListener("click", function () {
             form.reset(); //form clear kiya
             totalInput.value = "0";
             editingItemId = null;
-            saveBtn.innerText = "Save";
+           saveBtn.innerText = "save";
         })
         //if any network erro it will handle that
         .catch(error => {
             modal.style.display = "none";
             messageBox.innerText = "Something went wrong!";
             messageBox.style.display = "block";
+            // ye code X milliseconds baad chalega
+            setTimeout(function () { 
+                messageBox.style.display = "none";
+             }, 3000); // 3000ms = 3 seconds
         });
         })
 
