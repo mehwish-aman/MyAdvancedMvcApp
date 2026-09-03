@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LHrx+fPuUkU=",
+  "dgSpecHash": "G0QR8g/aRzs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\USER\\MyMvcApp\\MyMvcApp.csproj",
+  "projectFilePath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\USER\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",
@@ -52,5 +52,15 @@
     "C:\\Users\\USER\\.nuget\\packages\\system.security.cryptography.pkcs\\9.0.11\\system.security.cryptography.pkcs.9.0.11.nupkg.sha512",
     "C:\\Users\\USER\\.nuget\\packages\\system.security.cryptography.protecteddata\\9.0.11\\system.security.cryptography.protecteddata.9.0.11.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+      "warningLevel": 1,
+      "filePath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

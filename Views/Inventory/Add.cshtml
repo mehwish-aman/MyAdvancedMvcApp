@@ -344,7 +344,8 @@ ke use ke liye.-->
         <tr id="row-@item.Id">
             <td class="text-left">@item.ItemName</td>
             <td class="text-left"> 
-                <span class="tooltip-wrapper truncate"> @item.Description
+                <span class="tooltip-wrapper">
+                    <span class="truncate">@item.Description</span>
                     <span class="tooltip-text">@item.Description</span>
                 </span>
             </td>
@@ -692,10 +693,20 @@ yesBtn.addEventListener("click", function () {
                 if (row) {
                     row.remove();
                 }
+                  // Save/Update jaisa hi messageBox pattern delete ky loiye b 
+            messageBox.innerText = data.message;
+            messageBox.style.display = "block";
+            setTimeout(function () {
+                messageBox.style.display = "none";
+            }, 3000);
             })
             .catch(error => {
                 deleteModal.style.display = "none";
-                alert("Something went wrong while deleting.");
+                  messageBox.innerText = "Something went wrong while deleting.";
+            messageBox.style.display = "block";
+            setTimeout(function () {
+                messageBox.style.display = "none";
+            }, 3000);
             });
         }
 });
