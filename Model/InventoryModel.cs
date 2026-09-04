@@ -25,5 +25,8 @@ public class InventoryItem
     [Range(0, 999999)]   //for limiting to 6 digits only
     public decimal Total { get; set; }=0;  //default value set kr di hai visual hint.
     [Range(0, 999999)]
+    public int? CategoryId { get; set; }
+
+    public string? CategoryName { get; set; }
      public bool IsDeleted { get; set; } = false;
 }

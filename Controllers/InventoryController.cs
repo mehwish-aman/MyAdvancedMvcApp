@@ -21,7 +21,7 @@ public class InventoryController : Controller //inheriting render, req features 
     }
 
 
-                                                    //Add/GET method through SP calling
+                                                    //Add/GET method  for items through SP calling
      //  will handle the GET request to display the inventory items page.
      //  It will fetch the inventory items from the database and pass them to the view.
      //flow
@@ -51,6 +51,32 @@ public class InventoryController : Controller //inheriting render, req features 
             return StatusCode(500, new { message = "An error occurred while fetching the items.", error = ex.Message });
         }
     }
+
+
+//get method for Categories through SP calling
+    [HttpGet]
+
+    public IActionResult GetCategories()
+    {
+        try
+        {
+            var categories = _context.Categories
+                .FromSqlRaw("EXEC Category_get")
+                .AsEnumerable()
+                .Select(c => new { c.Id, c.Name })
+                .ToList();
+
+            return Ok(categories); // Return the categories as JSON
+        }
+        catch (Exception ex)
+        {
+            // Agar koi exception aata hai, to 500 Internal Server Error ke saath error message bhej do
+            return StatusCode(500, new { message = "An error occurred while fetching the categories.", error = ex.Message });
+            
+        }
+    }
+
+
 
                                                     //Save
 //Save method will handle the POST request to save the inventory item to the database
@@ -85,12 +111,12 @@ public class InventoryController : Controller //inheriting render, req features 
     };
     //EXECUUTE wali jab srf query chalani ho, data wapis na chhaiyay ho. r ye value {n}, sql injection sy bachny ky liye.
     _context.Database.ExecuteSqlRaw(
-        "EXEC Inventory_Items @action = {0}, @Id = {1} OUTPUT, @ItemName = {2}, @Description = {3}, @PurchaseValue = {4}, @PurchaseDate = {5}, @Tax = {6}, @Company = {7}, @Total = {8}, @msg ={9} OUTPUT",
-        "INSERT", idParam, model.ItemName, model.Description, model.PurchaseValue, model.PurchaseDate, model.Tax, model.Company, model.Total, msgParam
+        "EXEC Inventory_Items @action = {0}, @Id = {1} OUTPUT, @ItemName = {2}, @Description = {3}, @PurchaseValue = {4}, @PurchaseDate = {5}, @Tax = {6}, @Company = {7}, @Total = {8}, @CategoryId={9}, @msg ={10} OUTPUT",
+        "INSERT", idParam, model.ItemName, model.Description, model.PurchaseValue, model.PurchaseDate, model.Tax, model.Company, model.Total,model.CategoryId,  msgParam
     );
      model.Id = (int)idParam.Value;   // database se naya generated Id yahan mil gaya. yeh ab model ky thrgh view mwin dikha sakty hain hm ab. pr isy pehly cnvrt kr liya hai int mein.
      string msg = msgParam.Value?.ToString() ?? "Item saved successfully to the database!";  // database se msg wapis mil gaya. yeh ab model ky thrgh view mwin dikha sakty hain hm ab. pr isy pehly cnvrt kr liya hai string mein.
-         //new- http- 200 okay status code. aik anonymous obj mein srf data hota hai auto convert json mein ho kr phir 
+         //new- http- 200 okay status code. aik anonymous obj mein srf data hota hai auto con`vert json mein ho kr phir 
          //S ko milta hai new item ki sari details. JS us data ko table mein show krta hai.
     return Ok(new
     {   //ye msg json mein cnvrt hokr JS(frntend)ko wapis jata hai. kay sb okay howa.JS begair pg relod kiyay naya row add kr deta hai table mein.
@@ -103,7 +129,8 @@ public class InventoryController : Controller //inheriting render, req features 
         rawDate = model.PurchaseDate.ToString("yyyy-MM-dd"),
         tax = model.Tax,
         total = model.Total,
-        company = model.Company
+        company = model.Company,
+        categoryId = model.CategoryId
     });
         }
     catch (Exception ex)
@@ -130,8 +157,8 @@ public IActionResult Update(int id, InventoryItem model)
             Direction=ParameterDirection.Output
         };
 
-        var rowsAffected = _context.Database.ExecuteSqlRaw("EXEC Inventory_Items @action = {0}, @Id = {1}, @ItemName = {2}, @Description = {3}, @PurchaseValue = {4}, @PurchaseDate = {5}, @Tax = {6}, @Company = {7}, @Total = {8}, @msg = {9} OUTPUT",
-            "UPDATE", id, model.ItemName, model.Description, model.PurchaseValue, model.PurchaseDate, model.Tax, model.Company, model.Total, msgParam
+        var rowsAffected = _context.Database.ExecuteSqlRaw("EXEC Inventory_Items @action = {0}, @Id = {1}, @ItemName = {2}, @Description = {3}, @PurchaseValue = {4}, @PurchaseDate = {5}, @Tax = {6}, @Company = {7}, @Total = {8},@CategoryId = {9}, @msg = {10} OUTPUT",
+            "UPDATE", id, model.ItemName, model.Description, model.PurchaseValue, model.PurchaseDate, model.Tax, model.Company, model.Total, model.CategoryId, msgParam
         );
         if (rowsAffected == 0)
         {
@@ -149,7 +176,8 @@ public IActionResult Update(int id, InventoryItem model)
             tax = model.Tax,
             rawDate = model.PurchaseDate.ToString("yyyy-MM-dd"),
             total = model.Total,
-            company = model.Company
+            company = model.Company,
+            categoryId = model.CategoryId
         });
     }
     catch (Exception ex)

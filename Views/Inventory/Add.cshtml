@@ -3,7 +3,7 @@
     body {
         background-color: white;
         font-family: Arial, sans-serif;
-        padding: 20px;
+        padding: 27px;
         min-height: 100vh;
         box-sizing: border-box;
         margin: 0;
@@ -162,7 +162,7 @@
         font-size: 15px;
     }
     .page-title {
-    margin: 0 0 20px 0;
+    margin: 0 0 17px 0;
 }
     #messageBox {
         display: none;
@@ -184,19 +184,47 @@
 
 .list-header-row {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 13px;
 }
 .list-header-row .page-title {
     margin: 0;
 }
 .list-header-row input {
-    width: 300px;
-    padding: 10px;
-    border: 1px solid #ccc;
+    width: 250px;
+    padding: 8px;
+    border: 2px solid #928888;
     border-radius: 5px;
     box-sizing: border-box;
+}
+.search-wrapper {
+    display: flex;
+    align-items: stretch;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#searchInput {
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    font-size: 16px;
+    width: 240px;
+    box-shadow: none;
+     margin: 0;   /* YE ADD KARO */
+}
+
+.search-icon-btn {
+    background-color: #83a5d8;
+    border: none;
+    color: white;
+    padding: 0 18px;
+    font-size: 18px;
+    border-radius: 0 6px 6px 0;
+    cursor: default;
 }
 .search-row{
          display: flex;
@@ -265,70 +293,96 @@
     visibility: visible;
     opacity: 1;
 }
+.add-row-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.add-row-box input,
+.add-row-box select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 120px;
+}
+#addItemBtn {
+    padding: 12px 24px;
+    background-color: #24935d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#addItemBtn:hover {
+    background-color: #157347;
+}
+.add-row-box button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    background-color: #f0f0f0;
+}
+
+.add-row-box button:hover {
+    background-color: #e0e0e0;
+}
 </style>
-<h3 class="page-title" >Add Inventory Item</h3>
-<div class="form-box">
-    <!--method post means form data ko request ki body mein bhejyga chupa kr), action= konsy url py data jayega
-    JS se is form ko bad mein pkrny ky liye--->
-    <form method="post" action="/Inventory/Save" id="inventoryForm">
-        <div class="form-grid">
-            <!-- hr feild isi pattern mein hai-->
-            <div class="field-group">
-                <label>Item Name  <span style="color:red;">*</span></label>
-                <input type="text" name="ItemName" maxlength="100" required />
-            </div>
-            <div class="field-group">
-                <label>Description</label>
-                <input type="text" name="Description" maxlength="250" />
-            </div>
-
-            <div class="field-group">
-                <label>Purchase Value  <span style="color:red;">*</span></label>
-                <input type="number" step="0.01" id="PurchaseValue" name="PurchaseValue" placeholder="0" required />
-            </div>
-            <div class="field-group">
-                <label>Purchase Date  <span style="color:red;">*</span></label>
-                <input type="date" name="PurchaseDate" required />
-            </div>
-
-            <div class="field-group">
-                <label>Tax  <span style="color:red;">*</span></label>
-                <input type="number" step="0.01" id="tax" name="Tax" placeholder="0" required />
-            </div>
-            <div class="field-group">
-                <label>Total</label>
-                <input type="number" step="0.01" id="total" name="Total" placeholder="0" readonly />
-            </div>
-
-            <div class="field-group">
-                <label>Company  <span style="color:red;">*</span></label>
-                <input type="text" name="Company" maxlength="100" required />
-            </div>
-        </div>
-        <div id="validationError" style="display:none; color:#dc3545; font-weight:bold; margin-top:15px;"></div>
-
-        <div class="save-row">
-            <button type="button" id="saveBtn">Save</button>
-        </div>
-
-        <div id="messageBox"></div>
-    </form>
-</div>
+<h2 class="page-title" >Inventory Dashboard</h2>
 
 <!-- table-box ek white card hai (form-box jaisa hi styling) jo neeche Inventory List dikhata hai. 
 Isके andar ek <table> hai jisme foreach (var item in Model) se database ki har row ke 
 liye ek <tr> banta hai — har row mein item ka data (Name, Value, Date, etc.) aur Action column mein 
 Edit ✏️ aur Delete 🗑️ buttons hote hain, jinki Id data-id attribute mein chhupi hoti hai JavaScript 
 ke use ke liye.-->
-<div class="table-box">
-    <div class="list-header-row">
-        <h3 class="page-title">Inventory List</h3>
+
+
+<div class="list-header-row">
+    <button type="button" id="addItemBtn">+ Add Item</button>
+      <div class="search-wrapper">
         <input type="text" id="searchInput" placeholder="Search by item name, company..." />
+        <button type="button" class="search-icon-btn" tabindex="-1">🔍</button>
+    </div>
+</div>
+    <div id="messageBox"></div>
+<div class="add-row-box" id="addRowContainer" style="display:none;">
+    <input type="text" placeholder="Item Name" data-field="ItemName" required />
+    <input type="text" placeholder="Description" data-field="Description" />
+    <input type="text" placeholder="Company" data-field="Company" required />
+    <select data-field="CategoryId" id="rowCategory" required>
+        <option value="">-- Select Category --</option>
+    </select>
+    <input type="number" step="0.01" id="rowPurchaseValue" placeholder="Purchase Value" data-field="PurchaseValue" required />
+    <input type="date" data-field="PurchaseDate" required />
+    <input type="number" step="0.01" id="rowTax" placeholder="Tax" data-field="Tax" required />
+    <input type="number" step="0.01" id="rowTotal" placeholder="Total" data-field="Total" readonly />
+    <button type="button" id="rowSaveBtn">💾</button>
+    <button type="button" id="rowCancelBtn">✖️</button>
+</div>
+<div class="table-box">
+    <div class="list-header-row" style="justify-content: flex-start;">
+        <h3 class="page-title">Inventory List</h3>
     </div>
     <table class="inventory-table">
         <thead>
             <tr>
                 <th class="text-left">Item Name</th>
+                <th class="text-left">Category</th>
                 <th class="text-left">Description</th>
                 <th class="text-left">Company</th>
                 <th class="text-right">Purchase Value</th>
@@ -338,35 +392,37 @@ ke use ke liye.-->
                 <th>Action</th>
             </tr>
         </thead>
-       <tbody id="inventoryTableBody">
-    @foreach (var item in Model)
-    {
-        <tr id="row-@item.Id">
-            <td class="text-left">@item.ItemName</td>
-            <td class="text-left"> 
-                <span class="tooltip-wrapper">
-                    <span class="truncate">@item.Description</span>
-                    <span class="tooltip-text">@item.Description</span>
-                </span>
-            </td>
-            <td class="text-left">@item.Company</td>
-            <td class="text-right">@item.PurchaseValue</td>
-            <td class="text-center">@item.PurchaseDate.ToShortDateString()</td>
-            <td class="text-right">@item.Tax</td>
-            <td class="text-right">@item.Total</td>
-            <td>
-                <button type="button" class="edit-btn"
-                    data-id="@item.Id"
-                    data-itemname="@item.ItemName"
-                    data-description="@item.Description"
-                    data-purchasevalue="@item.PurchaseValue"
-                    data-purchasedate="@item.PurchaseDate.ToString("yyyy-MM-dd")"
-                    data-tax="@item.Tax"
-                    data-company="@item.Company">✏️</button>
-                <button type="button" class="delete-btn" data-id="@item.Id">🗑️</button>
-            </td>
-        </tr>
-    }
+    <tbody id="inventoryTableBody">
+        @foreach (var item in Model)
+        {
+            <tr id="row-@item.Id">
+                <td class="text-left">@item.ItemName</td>
+                <td class="text-left">@item.CategoryName</td>
+                <td class="text-left"> 
+                    <span class="tooltip-wrapper">
+                        <span class="truncate">@item.Description</span>
+                        <span class="tooltip-text">@item.Description</span>
+                    </span>
+                </td>
+                <td class="text-left">@item.Company</td>
+                <td class="text-right">@item.PurchaseValue</td>
+                <td class="text-center">@item.PurchaseDate.ToShortDateString()</td>
+                <td class="text-right">@item.Tax</td>
+                <td class="text-right">@item.Total</td>
+                <td>
+                    <button type="button" class="edit-btn"
+                        data-id="@item.Id"
+                        data-itemname="@item.ItemName"
+                        data-description="@item.Description"
+                        data-purchasevalue="@item.PurchaseValue"
+                        data-purchasedate="@item.PurchaseDate.ToString("yyyy-MM-dd")"
+                        data-tax="@item.Tax"
+                        data-company="@item.Company"
+                        data-categoryid="@item.CategoryId">✏️</button>
+                    <button type="button" class="delete-btn" data-id="@item.Id">🗑️</button>
+                </td>
+            </tr>
+        }
 </tbody>
     </table>
     <div class="pagination-controls" id="paginationControls">
@@ -426,9 +482,6 @@ Dono alag alag IDs rakhte hain taake independently control ho sakein (ek dusre k
 <script>
     /* Teeno numeric fields ko JavaScript variables mein save kr liya, taake unko baar-baar 
 dhoondhna na pade*/
-const purchaseValueInput = document.getElementById("PurchaseValue");
-const taxInput = document.getElementById("tax");
-const totalInput = document.getElementById("total");
 /*Pehle saare zaroori elements (saveBtn, modal, yesBtn, noBtn, form, messageBox) ko getElementById se 
 pakda gaya. */
 const saveBtn = document.getElementById("saveBtn");
@@ -441,8 +494,10 @@ const deleteModal = document.getElementById("deleteModal");
 const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
 const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 const validationError = document.getElementById("validationError");
-
-const rowsPerPage=5;
+const purchaseValueInput = document.getElementById("rowPurchaseValue");
+const taxInput = document.getElementById("rowTax");
+const totalInput = document.getElementById("rowTotal");
+const rowsPerPage=8;
 let currentPage=1;
 
 let editingItemId = null; /*null matlab "naya item add ho raha hai", number matlab "is Id ko edit 
@@ -451,7 +506,110 @@ kiya ja raha hai*/
 //"abhi konsi item delete honi hai" jab tak "Yes" na dabe.
 let itemIdToDelete = null;
 
-                        /*Function for Calulating Total Purchse Value*/
+
+
+////////////LOgic for add butten and hidden row , save and cancel//////////////
+
+//          add button par row clone karne ka logic
+const addItemBtn = document.getElementById("addItemBtn");
+const addRowContainer = document.getElementById("addRowContainer");
+
+addItemBtn.addEventListener("click", function () {
+    addRowContainer.style.display = "flex";
+});
+
+
+///////////////////CANCEL BUTTON LOGIC-container gaib row khali ho r gaib ho jaye
+const rowCancelBtn = document.getElementById("rowCancelBtn");
+rowCancelBtn.addEventListener("click", function () {
+    addRowContainer.style.display = "none";
+    addRowContainer.querySelectorAll("[data-field]").forEach(input => input.value = "");
+    editingItemId = null;
+});
+
+
+//////////////Row save button logic 
+const rowSaveBtn = document.getElementById("rowSaveBtn");
+rowSaveBtn.addEventListener("click", function () {
+    const inputs = addRowContainer.querySelectorAll("[data-field]");
+
+    const formData = new FormData();
+    inputs.forEach(input => {
+        formData.append(input.getAttribute("data-field"), input.value);
+    });
+
+    let isValid = true;
+    inputs.forEach(input => {
+        if (input.hasAttribute("required") && !input.checkValidity()) {
+            isValid = false;
+            input.reportValidity();
+        }
+    });
+    if (!isValid) return;
+
+    const url = editingItemId ? "/Inventory/Update/" + editingItemId : "/Inventory/Save";
+    const categorySelect = addRowContainer.querySelector('[data-field="CategoryId"]');
+    const selectedCategoryName = categorySelect.options[categorySelect.selectedIndex].text;
+    fetch(url, { method: "POST", body: formData })
+        .then(response => response.json())
+        .then(data => {
+            addRowContainer.style.display = "none";
+            inputs.forEach(input => input.value = "");
+
+            messageBox.innerText = data.message;
+            messageBox.style.display = "block";
+            setTimeout(function () { messageBox.style.display = "none"; }, 3000);
+
+            if (editingItemId) {
+                const row = document.getElementById("row-" + data.id);
+                row.innerHTML = `
+                    <td class="text-left">${data.itemName}</td>
+                     <td class="text-left">${selectedCategoryName}</td>
+                    <td class="text-left">${data.description}</td>
+                    <td class="text-left">${data.company}</td>
+                    <td class="text-right">${data.purchaseValue}</td>
+                    <td class="text-center">${data.purchaseDate}</td>
+                    <td class="text-right">${data.tax}</td>
+                    <td class="text-right">${data.total}</td>
+                    <td>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}" data-categoryid="${data.categoryId}">✏️</button>
+                        <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+                    </td>
+                `;
+                attachRowEvents(row);
+                editingItemId = null;
+            } else {
+                const tableBody = document.getElementById("inventoryTableBody");
+                const newRow = document.createElement("tr");
+                newRow.id = "row-" + data.id;
+                newRow.innerHTML = `
+                    <td class="text-left">${data.itemName}</td>
+                     <td class="text-left">${selectedCategoryName}</td>
+                    <td class="text-left">${data.description}</td>
+                    <td class="text-left">${data.company}</td>
+                    <td class="text-right">${data.purchaseValue}</td>
+                    <td class="text-center">${data.purchaseDate}</td>
+                    <td class="text-right">${data.tax}</td>
+                    <td class="text-right">${data.total}</td>
+                    <td>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}"  data-categoryid="${data.categoryId}">✏️</button>
+                        <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
+                    </td>
+                `;
+                tableBody.prepend(newRow);
+                attachRowEvents(newRow);
+            }
+        })
+        .catch(error => {
+            messageBox.innerText = "Something went wrong!";
+            messageBox.style.display = "block";
+            setTimeout(function () { messageBox.style.display = "none"; }, 3000);
+        });
+});
+
+
+
+                     /*Function for Calulating Total Purchse Value*/
 function calculateTotal() {  
 /*parseFloat(...) input ki value string hoti hai (jaise "500"), isko number mein convert karta hai
 || 0 agar field khali ho (parseFloat NaN de), to 0 use karo, crash na ho*/
@@ -490,14 +648,18 @@ function attachRowEvents(row) {
 
     row.querySelector(".edit-btn").addEventListener("click", function () {
     editingItemId = this.getAttribute("data-id");
-    document.querySelector('input[name="ItemName"]').value = this.getAttribute("data-itemname");
-    document.querySelector('input[name="Description"]').value = this.getAttribute("data-description");
-    purchaseValueInput.value = this.getAttribute("data-purchasevalue");
-    document.querySelector('input[name="PurchaseDate"]').value = this.getAttribute("data-purchasedate");
-    taxInput.value = this.getAttribute("data-tax");
-    document.querySelector('input[name="Company"]').value = this.getAttribute("data-company");
+
+    addRowContainer.querySelector('[data-field="ItemName"]').value = this.getAttribute("data-itemname");
+    addRowContainer.querySelector('[data-field="Description"]').value = this.getAttribute("data-description");
+    addRowContainer.querySelector('[data-field="PurchaseValue"]').value = this.getAttribute("data-purchasevalue");
+    addRowContainer.querySelector('[data-field="PurchaseDate"]').value = this.getAttribute("data-purchasedate");
+    addRowContainer.querySelector('[data-field="Tax"]').value = this.getAttribute("data-tax");
+    addRowContainer.querySelector('[data-field="Company"]').value = this.getAttribute("data-company");
+    addRowContainer.querySelector('[data-field="CategoryId"]').value = this.getAttribute("data-categoryid");
     calculateTotal();
-    saveBtn.innerText = "Update";});
+
+    addRowContainer.style.display = "flex";
+});
 }
     // Page load ke waqt jo rows hain, unko events do
 document.querySelectorAll("#inventoryTableBody tr").forEach(function (row) {
@@ -531,11 +693,14 @@ function buildRowHtml(data) {
                 data-purchasevalue="${data.purchaseValue}"
                 data-purchasedate="${data.rawDate}"
                 data-tax="${data.tax}"
-                data-company="${data.company}">✏️</button>
+                data-company="${data.company}" 
+                data-categoryid="${data.categoryId}">✏️</button>
             <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
         </td>
     `;
 }
+
+@*
                // Save/Update button click — pehle validation check
                             /*Save Logic*/
     /*Save click hone par form.checkValidity() check karta hai form sahi bhara hai ya nahi 
@@ -608,6 +773,7 @@ yesBtn.addEventListener("click", function () {
                 const row = document.getElementById("row-" + data.id);
                 row.innerHTML = `
                     <td class="text-left">${data.itemName}</td>
+                     <td class="text-left">${selectedCategoryName}</td>
                     <td class="text-left">${data.description}</td>
                     <td class="text-left">${data.company}</td>
                     <td class="text-right">${data.purchaseValue}</td>
@@ -615,7 +781,7 @@ yesBtn.addEventListener("click", function () {
                     <td class="text-right">${data.tax}</td>
                     <td class="text-center">${data.total}</td>
                     <td>
-                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}" data-categoryid="${data.categoryId}">✏️</button>
                         <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
                     </td>
                 `;
@@ -628,6 +794,7 @@ yesBtn.addEventListener("click", function () {
                 /*is new row mein html content aya*/
                 newRow.innerHTML = `     
                     <td class="text-left">${data.itemName}</td>
+                    <td class="text-left">${selectedCategoryName}</td>
                     <td class="text-left">${data.description}</td>
                     <td class="text-left">${data.company}</td>
                     <td class="text-right">${data.purchaseValue}</td>
@@ -635,7 +802,7 @@ yesBtn.addEventListener("click", function () {
                     <td class="text-right">${data.tax}</td>
                     <td class="text-right">${data.total}</td>
                     <td>
-                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}">✏️</button>
+                        <button type="button" class="edit-btn" data-id="${data.id}" data-itemname="${data.itemName}" data-description="${data.description}" data-purchasevalue="${data.purchaseValue}" data-purchasedate="${data.rawDate}" data-tax="${data.tax}" data-company="${data.company}" data-categoryid="${data.categoryId}">✏️</button>
                         <button type="button" class="delete-btn" data-id="${data.id}">🗑️</button>
                     </td>
                 `;
@@ -660,7 +827,7 @@ yesBtn.addEventListener("click", function () {
         });
         })
 
-
+*@
                             // delete button logic javascript
         // Delete logic 
 
@@ -740,6 +907,27 @@ searchInput.addEventListener("input", function () {
     currentPage = 1; // Search karte waqt wapis page 1 pe le aao
     renderPagination();
 });
+
+
+
+
+
+function loadCategories() {
+    fetch("/Inventory/GetCategories")
+        .then(response => response.json())
+        .then(data => {
+            const categorySelect = document.getElementById("rowCategory");
+            data.forEach(cat => {
+                const option = document.createElement("option");
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error("Categories load nahi hui:", error));
+}
+
+loadCategories(); // page load hote hi call ho jaye
 
 
 //pagination logic

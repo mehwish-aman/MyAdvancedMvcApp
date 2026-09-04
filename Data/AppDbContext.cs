@@ -6,4 +6,5 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<InventoryItem> InventoryItems {get;set;}
+    public DbSet<Category> Categories { get; set; }
 }

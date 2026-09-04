@@ -3109,11 +3109,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+      "projectUniqueName": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
       "projectName": "MyMvcApp",
-      "projectPath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+      "projectPath": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
       "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\obj\\",
+      "outputPath": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -3595,13 +3595,5 @@
         }
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json."
-    }
-  ]
+  }
 }

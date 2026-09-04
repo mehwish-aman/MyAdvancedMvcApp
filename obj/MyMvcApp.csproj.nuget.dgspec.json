@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj": {}
+    "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj": {}
   },
   "projects": {
-    "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj": {
+    "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+        "projectUniqueName": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
         "projectName": "MyMvcApp",
-        "projectPath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
+        "projectPath": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\MyMvcApp.csproj",
         "packagesPath": "C:\\Users\\USER\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\USER\\MySPMvcApp\\MySPMvcApp\\obj\\",
+        "outputPath": "C:\\Users\\USER\\MyAdvancedMvcApp\\MySPMvcApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\USER\\AppData\\Roaming\\NuGet\\NuGet.Config"

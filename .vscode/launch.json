@@ -1,17 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "Launch Edge with ASP.NET Core",
-            "type": "msedge",
-            "request": "launch",
-            "preLaunchTask": "build",
-            "url": "http://localhost:7056/Inventory/Add",
-            "webRoot": "${workspaceFolder}",
-            "sourceMapPathOverrides": {
-                "https://localhost:7056/*": "${workspaceFolder}/*"
-            }
-        },
+
         {
             "name": ".NET Core Launch (web)",
             "type": "coreclr",
